@@ -5,6 +5,7 @@ namespace App\Infrastructure\Controller\Auth;
 use App\Domain\Entity\User;
 use App\Domain\Interface\RegisterServiceInterface;
 use App\Domain\Repository\UserRepository;
+use App\Infrastructure\Services\WalletService;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,6 +19,7 @@ class RegisterAction extends AbstractController
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly SerializerInterface $serializer,
+        private readonly WalletService $walletService,
         private readonly RegisterServiceInterface $userRegistrationService
     ) {
     }
@@ -42,6 +44,9 @@ class RegisterAction extends AbstractController
 
             $hashedPassword = $this->userRegistrationService->hashPassword($user->getPassword());
             $user->setPassword($hashedPassword);
+
+            $wallet = $this->walletService->create($user);
+            $user->setWallet($wallet);
 
             $this->userRepository->save($user, true);
 

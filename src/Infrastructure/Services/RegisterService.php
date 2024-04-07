@@ -8,7 +8,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-class RegisterService implements RegisterServiceInterface
+readonly class RegisterService implements RegisterServiceInterface
 {
     public function __construct(
         private UserPasswordHasherInterface $passwordHasher,
