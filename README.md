@@ -22,8 +22,6 @@ Requisitos:
 
 ### Payload
 
-Faça uma **proposta** :heart: de payload, se preferir, temos uma exemplo aqui:
-
 POST /transaction
 
 ```json
