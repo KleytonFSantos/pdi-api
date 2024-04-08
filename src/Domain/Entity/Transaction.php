@@ -2,24 +2,26 @@
 
 namespace App\Domain\Entity;
 
+use App\Domain\Repository\TransactionRepository;
 use App\Domain\Repository\WalletRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\HasLifecycleCallbacks]
-#[ORM\Entity(repositoryClass: WalletRepository::class)]
-#[ORM\Table(name: 'wallet')]
-class Wallet
+#[ORM\Entity(repositoryClass: TransactionRepository::class)]
+#[ORM\Table(name: 'transaction')]
+class Transaction
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\OneToOne(mappedBy: 'wallet', cascade: ['persist', 'remove'])]
-    private ?User $user = null;
-
     #[ORM\Column]
-    private ?float $balance = null;
+    private ?float $amount = null;
+
+    #[ORM\ManyToOne(inversedBy: 'transaction')]
+    #[ORM\JoinColumn(name: 'user_id', nullable: false)]
+    private ?User $user = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -27,14 +29,15 @@ class Wallet
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
 
-    public function getBalance(): ?float
+
+    public function getAmount(): ?float
     {
-        return $this->balance;
+        return $this->amount;
     }
 
-    public function setBalance(?float $balance): void
+    public function setAmount(?float $amount): void
     {
-        $this->balance = $balance;
+        $this->amount = $amount;
     }
 
     public function getUser(): ?User
@@ -42,17 +45,12 @@ class Wallet
         return $this->user;
     }
 
-    public function setUser(User $user): static
+    public function setUser(?User $user): static
     {
-        if ($user->getWallet() !== $this) {
-            $user->setWallet($this);
-        }
-
         $this->user = $user;
 
         return $this;
     }
-
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {

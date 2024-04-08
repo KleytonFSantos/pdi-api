@@ -3,6 +3,8 @@
 namespace App\Domain\Entity;
 
 use App\Domain\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -36,8 +38,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Wallet $wallet = null;
 
+
+    #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'user')]
+    private Collection $transaction;
+
     #[ORM\Column]
     private ?string $password = null;
+
+    public function __construct()
+    {
+        $this->transaction = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -145,5 +156,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->wallet = $wallet;
 
         return $this;
+    }
+
+    public function getTransactions(): Collection
+    {
+        return $this->transaction;
+    }
+
+    public function addTransaction(Transaction $transaction): void
+    {
+        if (!$this->transaction->contains($transaction)) {
+            $this->transaction->add($transaction);
+            $transaction->setUser($this);
+        }
+    }
+
+    public function removeTransaction(Transaction $transaction): void
+    {
+        if ($this->transaction->removeElement($transaction)) {
+            if ($transaction->getUser() === $this) {
+                $transaction->setUser(null);
+            }
+        }
     }
 }
