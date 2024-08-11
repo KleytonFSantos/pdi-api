@@ -34,7 +34,7 @@ class TransactionRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('t');
 
         return $query->select(
-            't.amount as value',
+                't.amount as value',
                     'upayer.name as payer',
                     'upayee.name as payee',
                     't.created_at'
