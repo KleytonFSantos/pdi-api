@@ -42,21 +42,14 @@ class TransactionPostAction extends AbstractController
                 new OA\JsonContent(
                     examples: [
                         new OA\Examples(
-                            example: 'value',
-                            summary: 'value',
-                            description: 'transaction ammount',
-                            value: 300
-                        ),
-                        new OA\Examples(
-                            example: 'payee',
-                            summary: 'payee',
-                            description: 'transaction payee',
-                            value: 100.00
+                            example: '{"value":"300", "payee: "2"}',
+                            summary: 'transaction data',
+                            description: 'transaction data',
                         ),
                     ],
                     properties: [
-                        new OA\Property(property: 'value', description: 'Transaction amount', type: 'integer', example: 300),
-                        new OA\Property(property: 'payee', description: 'Transaction payee', type: 'float', example: 100.00)
+                        new OA\Property(property: 'value', description: 'Transaction amount', type: 'float', example: 100.00),
+                        new OA\Property(property: 'payee', description: 'Transaction payee', type: 'integer', example: 2)
                     ],
                 )
             ],
@@ -66,8 +59,10 @@ class TransactionPostAction extends AbstractController
                 response: 201,
                 description: 'Transaction created successfully',
                 content: new OA\JsonContent(
-                    type: 'array',
-                    items: new OA\Items(type: null)
+                    properties: [
+                        new OA\Property(property: 'message', type: 'string', example: 'Transaction created successfully')
+                    ],
+                    type: 'object',
                 )
             ),
             new OA\Response(
@@ -75,7 +70,7 @@ class TransactionPostAction extends AbstractController
                 description: 'Bad request due to invalid input',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'error', type: 'string')
+                        new OA\Property(property: 'error', type: 'string'),
                     ],
                     type: 'object'
                 )
@@ -119,6 +114,7 @@ class TransactionPostAction extends AbstractController
             $this->managerRegistry->getManager()->rollback();
             return $this->json(['error' => $exception->getMessage()], $exception->getCode());
         } catch (Throwable $exception) {
+            dd($exception);
             $this->managerRegistry->getManager()->rollback();
             return $this->json(['error' => 'Ocorreu um erro inesperado'], Response::HTTP_BAD_REQUEST);
         }

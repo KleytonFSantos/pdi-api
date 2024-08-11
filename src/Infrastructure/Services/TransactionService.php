@@ -4,9 +4,7 @@ namespace App\Infrastructure\Services;
 
 
 use App\Domain\DTO\TransactionDTO;
-use App\Domain\Entity\Transaction;
-use App\Domain\Repository\UserRepository;
-use App\Domain\Repository\WalletRepository;
+use App\Domain\Repository\TransactionRepository;
 use App\Infrastructure\Builder\TransactionBuilder;
 use App\Infrastructure\Client\TransactionAuthorizationClient;
 use App\Infrastructure\Validator\TransactionValidator;
@@ -22,9 +20,9 @@ readonly class TransactionService
     public function __construct(
         private TransactionAuthorizationClient $authorizationClient,
         private TransactionBuilder $transactionBuilder,
+        private TransactionRepository $transactionRepository,
         private TransactionValidator $validator,
-        private UserRepository $userRepository,
-        private WalletRepository $walletRepository
+        private WalletService $walletService
     ) {
     }
 
@@ -35,32 +33,18 @@ readonly class TransactionService
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function create(TransactionDTO $transactionDTO, UserInterface $user): void
+    public function create(TransactionDTO $transactionDTO, UserInterface $payer): void
     {
-        $transaction = $this->transactionBuilder->build($transactionDTO);
-        $this->validator->validate($transactionDTO, $user);
+        $this->validator->validate($transactionDTO, $payer);
+        $transaction = $this->transactionBuilder->build($transactionDTO, $payer);
 
         if (! $this->authorizationClient->checkAuthorizationStatus()) {
             throw new Exception('Payment was not authorized');
         }
 
-        $this->debitWallet($transactionDTO, $user);
-        $this->creditWallet($transactionDTO, $transaction);
+        $this->transactionRepository->save($transaction);
+        $this->walletService->debitWallet($transactionDTO, $payer);
+        $this->walletService->creditWallet($transactionDTO, $transaction);
         //TODO notify user
-    }
-
-    private function debitWallet(TransactionDTO $transactionDTO, UserInterface $user): void
-    {
-        $user->getWallet()->setBalance($user->getWallet()->getBalance() - $transactionDTO->getValue());
-        $user->setWallet($user->getWallet());
-        $this->walletRepository->save($user->getWallet(), true);
-    }
-
-    private function creditWallet(TransactionDTO $transactionDTO, Transaction $transaction): void
-    {
-        $payee = $this->userRepository->find($transactionDTO->getPayee());
-        $payee->getWallet()->setBalance($payee->getWallet()->getBalance() + $transactionDTO->getValue());
-        $payee->setWallet($payee->getWallet());
-        $this->walletRepository->save($payee->getWallet(), true);
     }
 }
