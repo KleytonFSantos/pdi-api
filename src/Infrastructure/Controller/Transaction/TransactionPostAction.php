@@ -8,6 +8,7 @@ use App\Domain\Exception\PayerHasNotBalanceLimit;
 use App\Domain\Exception\PayerIsNotCommunException;
 use App\Infrastructure\Services\TransactionService;
 use Doctrine\Persistence\ManagerRegistry;
+use OpenApi\Attributes as OA;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +33,66 @@ class TransactionPostAction extends AbstractController
     }
 
     #[Route('/transaction', name: 'api_transaction', methods: ['POST'])]
+    #[OA\Post(
+        summary: 'Create a new transaction',
+        requestBody: new OA\RequestBody(
+            description: 'Transaction data',
+            required: true,
+            content: [
+                new OA\JsonContent(
+                    examples: [
+                        new OA\Examples(
+                            example: 'value',
+                            summary: 'value',
+                            description: 'transaction ammount',
+                            value: 300
+                        ),
+                        new OA\Examples(
+                            example: 'payee',
+                            summary: 'payee',
+                            description: 'transaction payee',
+                            value: 100.00
+                        ),
+                    ],
+                    properties: [
+                        new OA\Property(property: 'value', description: 'Transaction amount', type: 'integer', example: 300),
+                        new OA\Property(property: 'payee', description: 'Transaction payee', type: 'float', example: 100.00)
+                    ],
+                )
+            ],
+        ),
+        responses: [
+            new OA\Response(
+                response: 201,
+                description: 'Transaction created successfully',
+                content: new OA\JsonContent(
+                    type: 'array',
+                    items: new OA\Items(type: null)
+                )
+            ),
+            new OA\Response(
+                response: 400,
+                description: 'Bad request due to invalid input',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string')
+                    ],
+                    type: 'object'
+                )
+            ),
+            new OA\Response(
+                response: 500,
+                description: 'Unexpected server error',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'error', type: 'string')
+                    ],
+                    type: 'object'
+                )
+            )
+        ]
+    )]
+    #[OA\Tag(name: 'transaction')]
     public function __invoke(Request $request, UserInterface $user): JsonResponse
     {
         $this->managerRegistry->getManager()->beginTransaction();
