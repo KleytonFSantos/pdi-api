@@ -4,6 +4,7 @@ namespace App\Infrastructure\Services;
 
 
 use App\Domain\DTO\TransactionDTO;
+use App\Domain\Interface\TransactionServiceInterface;
 use App\Domain\Repository\TransactionRepository;
 use App\Infrastructure\Builder\TransactionBuilder;
 use App\Infrastructure\Client\TransactionAuthorizationClient;
@@ -15,7 +16,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-readonly class TransactionService
+readonly class TransactionService implements TransactionServiceInterface
 {
     public function __construct(
         private TransactionAuthorizationClient $authorizationClient,
@@ -46,5 +47,10 @@ readonly class TransactionService
         $this->walletService->debitWallet($transactionDTO, $payer);
         $this->walletService->creditWallet($transactionDTO, $transaction);
         //TODO notify user
+    }
+
+    public function getTransactionHistoryByUser(int $userId): array
+    {
+        return $this->transactionRepository->getTransactionHistoryByUser($userId);
     }
 }
