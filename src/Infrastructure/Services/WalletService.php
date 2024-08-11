@@ -10,13 +10,12 @@ use App\Domain\Repository\UserRepository;
 use App\Domain\Repository\WalletRepository;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class WalletService
+readonly class WalletService
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
-        private readonly WalletRepository $walletRepository,
-    )
-    {
+        private UserRepository   $userRepository,
+        private WalletRepository $walletRepository,
+    ) {
     }
 
     public function create(User $user): Wallet

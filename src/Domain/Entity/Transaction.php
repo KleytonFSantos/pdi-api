@@ -19,9 +19,11 @@ class Transaction
     #[ORM\Column]
     private ?float $amount = null;
 
-    #[ORM\ManyToOne(inversedBy: 'transaction')]
-    #[ORM\JoinColumn(name: 'user_id', nullable: false)]
-    private ?User $user = null;
+    #[ORM\Column]
+    private ?int $payee_id = null;
+
+    #[ORM\Column]
+    private ?int $payer_id = null;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $created_at = null;
@@ -40,17 +42,26 @@ class Transaction
         $this->amount = $amount;
     }
 
-    public function getUser(): ?User
+    public function getPayeeId(): ?int
     {
-        return $this->user;
+        return $this->payee_id;
     }
 
-    public function setUser(?User $user): static
+    public function setPayeeId(?int $payee_id): void
     {
-        $this->user = $user;
-
-        return $this;
+        $this->payee_id = $payee_id;
     }
+
+    public function getPayerId(): ?int
+    {
+        return $this->payer_id;
+    }
+
+    public function setPayerId(?int $payer_id): void
+    {
+        $this->payer_id = $payer_id;
+    }
+
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {

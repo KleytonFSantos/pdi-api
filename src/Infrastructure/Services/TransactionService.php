@@ -4,6 +4,7 @@ namespace App\Infrastructure\Services;
 
 
 use App\Domain\DTO\TransactionDTO;
+use App\Domain\Repository\TransactionRepository;
 use App\Infrastructure\Builder\TransactionBuilder;
 use App\Infrastructure\Client\TransactionAuthorizationClient;
 use App\Infrastructure\Validator\TransactionValidator;
@@ -19,6 +20,7 @@ readonly class TransactionService
     public function __construct(
         private TransactionAuthorizationClient $authorizationClient,
         private TransactionBuilder $transactionBuilder,
+        private TransactionRepository $transactionRepository,
         private TransactionValidator $validator,
         private WalletService $walletService
     ) {
@@ -31,16 +33,17 @@ readonly class TransactionService
      * @throws ClientExceptionInterface
      * @throws Exception
      */
-    public function create(TransactionDTO $transactionDTO, UserInterface $user): void
+    public function create(TransactionDTO $transactionDTO, UserInterface $payer): void
     {
-        $transaction = $this->transactionBuilder->build($transactionDTO);
-        $this->validator->validate($transactionDTO, $user);
+        $this->validator->validate($transactionDTO, $payer);
+        $transaction = $this->transactionBuilder->build($transactionDTO, $payer);
 
         if (! $this->authorizationClient->checkAuthorizationStatus()) {
             throw new Exception('Payment was not authorized');
         }
 
-        $this->walletService->debitWallet($transactionDTO, $user);
+        $this->transactionRepository->save($transaction);
+        $this->walletService->debitWallet($transactionDTO, $payer);
         $this->walletService->creditWallet($transactionDTO, $transaction);
         //TODO notify user
     }
