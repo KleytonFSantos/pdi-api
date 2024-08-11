@@ -24,6 +24,7 @@ security:
             jwt: ~
 
     access_control:
+        - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api/teste, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }
