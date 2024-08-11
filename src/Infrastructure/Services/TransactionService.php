@@ -5,14 +5,13 @@ namespace App\Infrastructure\Services;
 
 use App\Domain\DTO\TransactionDTO;
 use App\Domain\Entity\Transaction;
-use App\Domain\Entity\Wallet;
-use App\Domain\Enum\TransactionAuthorizationEnum;
+use App\Domain\Enum\TransactionAuthorization;
+use App\Domain\Enum\UserRoles;
 use App\Domain\Exception\PayeeIsCommunException;
 use App\Domain\Exception\PayerHasNotBalanceLimit;
 use App\Domain\Exception\PayerIsNotCommunException;
 use App\Domain\Repository\UserRepository;
 use App\Domain\Repository\WalletRepository;
-use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
@@ -55,14 +54,14 @@ readonly class TransactionService
     {
         $response = $this->client->request(
             'GET',
-            'https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc'
+            'https://run.mocky.io/v3/a44f11a6-1788-4160-bc48-610e66f8386b'
         );
 
         return json_decode(
             $response->getContent(),
             true
             )['message']
-            === TransactionAuthorizationEnum::AUTHORIZED->value;
+            === TransactionAuthorization::Autorizado->value;
     }
 
     public function builder(TransactionDTO $transactionDTO): Transaction
@@ -99,14 +98,14 @@ readonly class TransactionService
 
     private function payerIsCommun(array $roles): void
     {
-        if (!in_array('COMUN', $roles)) {
+        if (!in_array(UserRoles::Comun->value, $roles)) {
             throw new PayerIsNotCommunException('O lojista não pode ser o pagador');
         }
     }
 
     private function payeeIsNotCommun(array $roles): void
     {
-        if (!in_array('LOJISTA', $roles)) {
+        if (!in_array(UserRoles::Logista->value, $roles)) {
             throw new PayeeIsCommunException('Apenas lojistas recebem pagamentos');
         }
     }
