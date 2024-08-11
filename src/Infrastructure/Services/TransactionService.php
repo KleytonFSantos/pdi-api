@@ -4,9 +4,6 @@ namespace App\Infrastructure\Services;
 
 
 use App\Domain\DTO\TransactionDTO;
-use App\Domain\Entity\Transaction;
-use App\Domain\Repository\UserRepository;
-use App\Domain\Repository\WalletRepository;
 use App\Infrastructure\Builder\TransactionBuilder;
 use App\Infrastructure\Client\TransactionAuthorizationClient;
 use App\Infrastructure\Validator\TransactionValidator;
@@ -23,8 +20,7 @@ readonly class TransactionService
         private TransactionAuthorizationClient $authorizationClient,
         private TransactionBuilder $transactionBuilder,
         private TransactionValidator $validator,
-        private UserRepository $userRepository,
-        private WalletRepository $walletRepository
+        private WalletService $walletService
     ) {
     }
 
@@ -44,23 +40,8 @@ readonly class TransactionService
             throw new Exception('Payment was not authorized');
         }
 
-        $this->debitWallet($transactionDTO, $user);
-        $this->creditWallet($transactionDTO, $transaction);
+        $this->walletService->debitWallet($transactionDTO, $user);
+        $this->walletService->creditWallet($transactionDTO, $transaction);
         //TODO notify user
-    }
-
-    private function debitWallet(TransactionDTO $transactionDTO, UserInterface $user): void
-    {
-        $user->getWallet()->setBalance($user->getWallet()->getBalance() - $transactionDTO->getValue());
-        $user->setWallet($user->getWallet());
-        $this->walletRepository->save($user->getWallet(), true);
-    }
-
-    private function creditWallet(TransactionDTO $transactionDTO, Transaction $transaction): void
-    {
-        $payee = $this->userRepository->find($transactionDTO->getPayee());
-        $payee->getWallet()->setBalance($payee->getWallet()->getBalance() + $transactionDTO->getValue());
-        $payee->setWallet($payee->getWallet());
-        $this->walletRepository->save($payee->getWallet(), true);
     }
 }
