@@ -35,22 +35,17 @@ class RegisterAction extends AbstractController
                 new OA\JsonContent(
                     examples: [
                         new OA\Examples(
-                            example: 'name',
-                            summary: 'name',
-                            description: 'name of user',
-                            value: 'john'
-                        ),
-                        new OA\Examples(
-                            example: 'email',
-                            summary: 'email',
-                            description: 'email of user',
-                            value: 'john@example.com'
-                        ),
-                        new OA\Examples(
-                            example: 'password',
-                            summary: 'password',
-                            description: 'password of user',
-                            value: '12345678'
+                            example: 'Try out example',
+                            summary: 'Try out example',
+                            description: 'Try out example to execute',
+                            value: '{
+                                "email": "john@gmail.com",
+                                "name":"john",
+                                "cpf": "11021133445",
+                                "password": "12345678",
+                                "roles": ["COMUN"],
+                                "password_confirmation": "12345678"
+                            }'
                         ),
                     ],
                     properties: [
@@ -67,9 +62,29 @@ class RegisterAction extends AbstractController
                             example: 'john@example.com'
                         ),
                         new OA\Property(
+                            property: 'cpf',
+                            description: 'CPF of user',
+                            type: 'string',
+                            example: '12345678911'
+                        ),
+                        new OA\Property(
+                            property: 'roles',
+                            description: 'roles of user',
+                            type: 'array',
+                            items: new OA\Items(
+                                example: "['LOGISTA'] ou ['COMUN']"
+                            ),
+                        ),
+                        new OA\Property(
                             property: 'password',
                             description: 'password of user',
-                            type: 'float',
+                            type: 'string',
+                            example: '12345678'
+                        ),
+                        new OA\Property(
+                            property: 'password_confirmation',
+                            description: 'password_confirmation of user',
+                            type: 'string',
                             example: '12345678'
                         )
                     ]
@@ -82,7 +97,7 @@ class RegisterAction extends AbstractController
                 description: 'User registered successfully',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'message', type: 'string', example: 'OK')
+                        new OA\Property(property: 'user', type: 'object', example: 'john@gmail.com')
                     ],
                     type: 'object',
                 )

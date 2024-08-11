@@ -2,12 +2,14 @@
 
 namespace App\Domain\Entity;
 
+use App\Domain\Enum\UserRoles;
 use App\Domain\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -20,18 +22,31 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $id = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotNull()]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $email = null;
 
     #[ORM\Column(length: 180)]
+    #[Assert\NotNull()]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
     private ?string $name = null;
 
     #[ORM\Column(length: 14)]
+    #[Assert\NotNull()]
+    #[Assert\NotBlank()]
+    #[Assert\Type('string')]
+    #[Assert\Length(min: 11, max: 14)]
     private ?string $cpf = null;
 
     /**
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Assert\NotNull()]
+    #[Assert\NotBlank()]
+    #[Assert\Choice([[UserRoles::Logista->value], [UserRoles::Comun->value]])]
     private array $roles = [];
 
     #[ORM\OneToOne(inversedBy: 'user', cascade: ['persist', 'remove'])]
@@ -43,7 +58,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private Collection $transaction;
 
     #[ORM\Column]
+    #[Assert\NotNull()]
+    #[Assert\Type('string')]
+    #[Assert\NotBlank()]
     private ?string $password = null;
+
+    #[Assert\NotNull()]
+    #[Assert\Type('string')]
+    #[Assert\NotBlank()]
+    #[Assert\EqualTo(propertyPath: "password")]
+    private ?string $passwordConfirmation = null;
 
     public function __construct()
     {
@@ -135,6 +159,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = $password;
 
         return $this;
+    }
+
+
+    public function getPasswordConfirmation(): ?string
+    {
+        return $this->passwordConfirmation;
+    }
+
+    public function setPasswordConfirmation(?string $passwordConfirmation): void
+    {
+        $this->passwordConfirmation = $passwordConfirmation;
     }
 
     /**
