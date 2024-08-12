@@ -114,7 +114,6 @@ class TransactionPostAction extends AbstractController
             $this->managerRegistry->getManager()->rollback();
             return $this->json(['error' => $exception->getMessage()], $exception->getCode());
         } catch (Throwable $exception) {
-            dd($exception);
             $this->managerRegistry->getManager()->rollback();
             return $this->json(['error' => 'Ocorreu um erro inesperado'], Response::HTTP_BAD_REQUEST);
         }

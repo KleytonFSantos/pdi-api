@@ -3,19 +3,25 @@
 namespace App\Infrastructure\Validator;
 
 use App\Domain\DTO\TransactionDTO;
+use App\Domain\Enum\TransactionAuthorization;
 use App\Domain\Enum\UserRoles;
 use App\Domain\Exception\PayeeIsCommunException;
 use App\Domain\Exception\PayerHasNotBalanceLimit;
 use App\Domain\Exception\PayerIsNotCommunException;
 use App\Domain\Repository\UserRepository;
+use App\Infrastructure\Client\TransactionAuthorizationClient;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 
-class TransactionValidator
+readonly class TransactionValidator
 {
     public function __construct(
-        private readonly UserRepository $userRepository,
-    )
-    {
+        private UserRepository $userRepository,
+        private TransactionAuthorizationClient $transactionAuthorizationClient,
+    ) {
     }
 
     public function validate(TransactionDTO $transactionDTO, UserInterface $user): void
@@ -24,6 +30,18 @@ class TransactionValidator
         $this->payerIsCommun($user->getRoles());
         $this->payeeIsNotCommun($payee->getRoles());
         $this->payerHasBalanceLimit($user->getWallet()->getBalance(), $transactionDTO->getValue());
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     * @throws ServerExceptionInterface
+     * @throws RedirectionExceptionInterface
+     * @throws ClientExceptionInterface
+     */
+    public function isAuthorizationStatusAuthorized(): bool
+    {
+        return TransactionAuthorization::Autorizado->value ===
+            $this->transactionAuthorizationClient->authorizationStatus();
     }
 
     private function payerIsCommun(array $roles): void

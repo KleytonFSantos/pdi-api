@@ -7,7 +7,6 @@ use App\Domain\DTO\TransactionDTO;
 use App\Domain\Interface\TransactionServiceInterface;
 use App\Domain\Repository\TransactionRepository;
 use App\Infrastructure\Builder\TransactionBuilder;
-use App\Infrastructure\Client\TransactionAuthorizationClient;
 use App\Infrastructure\Validator\TransactionValidator;
 use Exception;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,11 +18,10 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 readonly class TransactionService implements TransactionServiceInterface
 {
     public function __construct(
-        private TransactionAuthorizationClient $authorizationClient,
-        private TransactionBuilder $transactionBuilder,
-        private TransactionRepository $transactionRepository,
-        private TransactionValidator $validator,
-        private WalletService $walletService
+        private TransactionBuilder             $transactionBuilder,
+        private TransactionRepository          $transactionRepository,
+        private TransactionValidator           $validator,
+        private WalletService                  $walletService,
     ) {
     }
 
@@ -39,14 +37,13 @@ readonly class TransactionService implements TransactionServiceInterface
         $this->validator->validate($transactionDTO, $payer);
         $transaction = $this->transactionBuilder->build($transactionDTO, $payer);
 
-        if (! $this->authorizationClient->checkAuthorizationStatus()) {
+        if (! $this->validator->isAuthorizationStatusAuthorized()) {
             throw new Exception('Payment was not authorized');
         }
 
         $this->transactionRepository->save($transaction);
         $this->walletService->debitWallet($transactionDTO, $payer);
-        $this->walletService->creditWallet($transactionDTO, $transaction);
-        //TODO notify user
+        $this->walletService->creditWallet($transactionDTO);
     }
 
     public function getTransactionHistoryByUser(int $userId): array

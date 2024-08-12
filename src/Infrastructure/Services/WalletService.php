@@ -29,16 +29,16 @@ readonly class WalletService
 
     public function debitWallet(TransactionDTO $transactionDTO, UserInterface $user): void
     {
-        $user->getWallet()->setBalance($user->getWallet()->getBalance() - $transactionDTO->getValue());
-        $user->setWallet($user->getWallet());
-        $this->walletRepository->save($user->getWallet(), true);
+        $wallet = $user->getWallet();
+        $wallet->setBalance($wallet->getBalance() - $transactionDTO->getValue());
+        $this->walletRepository->save($wallet);
     }
 
-    public function creditWallet(TransactionDTO $transactionDTO, Transaction $transaction): void
+    public function creditWallet(TransactionDTO $transactionDTO): void
     {
         $payee = $this->userRepository->find($transactionDTO->getPayee());
-        $payee->getWallet()->setBalance($payee->getWallet()->getBalance() + $transactionDTO->getValue());
-        $payee->setWallet($payee->getWallet());
-        $this->walletRepository->save($payee->getWallet(), true);
+        $wallet = $payee->getWallet();
+        $wallet->setBalance($wallet->getBalance() + $transactionDTO->getValue());
+        $this->walletRepository->save($wallet, true);
     }
 }
