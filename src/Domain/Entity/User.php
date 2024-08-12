@@ -53,6 +53,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Wallet $wallet = null;
 
+    /**
+     * @var Collection<int, Transaction> The user transactions
+     */
     #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'user')]
     private Collection $transaction;
 
@@ -190,6 +193,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    /**
+     * Retrieves the collection of transactions associated with the user.
+     *
+     * @return Collection<int, Transaction>
+     */
     public function getTransactions(): Collection
     {
         return $this->transaction;

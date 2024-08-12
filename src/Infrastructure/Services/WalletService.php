@@ -38,6 +38,6 @@ readonly class WalletService
         $payee = $this->userRepository->find($transactionDTO->getPayee());
         $wallet = $payee->getWallet();
         $wallet->setBalance($wallet->getBalance() + $transactionDTO->getValue());
-        $this->walletRepository->save($wallet, true);
+        $this->walletRepository->save($wallet);
     }
 }
