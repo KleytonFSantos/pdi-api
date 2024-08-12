@@ -23,7 +23,7 @@ class TransactionAuthorizationClient
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function checkAuthorizationStatus(): bool
+    public function authorizationStatus(): string
     {
         $response = $this->client->request(
             'GET',
@@ -33,6 +33,6 @@ class TransactionAuthorizationClient
         return json_decode(
                 $response->getContent(),
                 true
-            )['message']
-            === TransactionAuthorization::Autorizado->value;    }
+            )['message'];
+    }
 }
