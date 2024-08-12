@@ -3,7 +3,6 @@
 namespace App\Infrastructure\Services;
 
 use App\Domain\DTO\TransactionDTO;
-use App\Domain\Entity\Transaction;
 use App\Domain\Entity\User;
 use App\Domain\Entity\Wallet;
 use App\Domain\Repository\UserRepository;
@@ -13,7 +12,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 readonly class WalletService
 {
     public function __construct(
-        private UserRepository   $userRepository,
+        private UserRepository $userRepository,
         private WalletRepository $walletRepository,
     ) {
     }

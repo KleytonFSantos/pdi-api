@@ -3,7 +3,6 @@
 namespace App\Domain\Entity;
 
 use App\Domain\Repository\TransactionRepository;
-use App\Domain\Repository\WalletRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\HasLifecycleCallbacks]
@@ -30,7 +29,6 @@ class Transaction
 
     #[ORM\Column]
     private ?\DateTimeImmutable $updated_at = null;
-
 
     public function getAmount(): ?float
     {
@@ -61,7 +59,6 @@ class Transaction
     {
         $this->payer_id = $payer_id;
     }
-
 
     public function getCreatedAt(): ?\DateTimeImmutable
     {

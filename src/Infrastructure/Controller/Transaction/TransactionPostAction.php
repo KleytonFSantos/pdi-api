@@ -20,11 +20,9 @@ use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Throwable;
 
 class TransactionPostAction extends AbstractController
 {
-
     public function __construct(
         private readonly SerializerInterface $serializer,
         private readonly TransactionService $transactionService,
@@ -49,9 +47,9 @@ class TransactionPostAction extends AbstractController
                     ],
                     properties: [
                         new OA\Property(property: 'value', description: 'Transaction amount', type: 'float', example: 100.00),
-                        new OA\Property(property: 'payee', description: 'Transaction payee', type: 'integer', example: 2)
+                        new OA\Property(property: 'payee', description: 'Transaction payee', type: 'integer', example: 2),
                     ],
-                )
+                ),
             ],
         ),
         responses: [
@@ -60,7 +58,7 @@ class TransactionPostAction extends AbstractController
                 description: 'Transaction created successfully',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'message', type: 'string', example: 'Transaction created successfully')
+                        new OA\Property(property: 'message', type: 'string', example: 'Transaction created successfully'),
                     ],
                     type: 'object',
                 )
@@ -80,11 +78,11 @@ class TransactionPostAction extends AbstractController
                 description: 'Unexpected server error',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'error', type: 'string')
+                        new OA\Property(property: 'error', type: 'string'),
                     ],
                     type: 'object'
                 )
-            )
+            ),
         ]
     )]
     #[OA\Tag(name: 'transaction')]
@@ -99,22 +97,25 @@ class TransactionPostAction extends AbstractController
 
             return $this->json([], Response::HTTP_CREATED);
         } catch (
-            ClientExceptionInterface |
-            RedirectionExceptionInterface |
-            ServerExceptionInterface |
+            ClientExceptionInterface|
+            RedirectionExceptionInterface|
+            ServerExceptionInterface|
             TransportExceptionInterface $exception
         ) {
             $this->managerRegistry->getManager()->rollback();
+
             return $this->json(['error' => $exception->getMessage()], Response::HTTP_BAD_REQUEST);
         } catch (
-            PayerIsNotCommunException |
-            PayeeIsCommunException |
+            PayerIsNotCommunException|
+            PayeeIsCommunException|
             PayerHasNotBalanceLimit $exception
         ) {
             $this->managerRegistry->getManager()->rollback();
+
             return $this->json(['error' => $exception->getMessage()], $exception->getCode());
-        } catch (Throwable $exception) {
+        } catch (\Throwable $exception) {
             $this->managerRegistry->getManager()->rollback();
+
             return $this->json(['error' => 'Ocorreu um erro inesperado'], Response::HTTP_BAD_REQUEST);
         }
     }

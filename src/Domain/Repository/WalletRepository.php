@@ -2,10 +2,9 @@
 
 namespace App\Domain\Repository;
 
-use App\Domain\Entity\User;
 use App\Domain\Entity\Wallet;
-use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Persistence\ManagerRegistry;
 
 class WalletRepository extends ServiceEntityRepository
 {

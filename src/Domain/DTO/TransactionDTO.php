@@ -7,10 +7,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 class TransactionDTO
 {
-    #[Groups(["create"])]
+    #[Groups(['create'])]
     #[Property(type: 'float')]
     private float $value;
-    #[Groups(["create"])]
+    #[Groups(['create'])]
     #[Property(type: 'number')]
     private int $payee;
 
@@ -23,7 +23,6 @@ class TransactionDTO
     {
         $this->value = $value;
     }
-
 
     public function getPayee(): int
     {
