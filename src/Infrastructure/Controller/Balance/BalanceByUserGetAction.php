@@ -12,7 +12,6 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class BalanceByUserGetAction extends AbstractController
 {
-
     #[Route('/{user}/balance', name: 'api_user_balance', methods: 'GET')]
     #[OA\Get(
         summary: 'Get the current balance of a user',
@@ -34,14 +33,14 @@ class BalanceByUserGetAction extends AbstractController
                     type: 'object',
                     example: '{"error": "Unauthorized"}'
                 )
-            )
+            ),
         ],
     )]
     #[Security(name: 'Authorization')]
     public function __invoke(User $user): JsonResponse
     {
         return $this->json([
-            'balance' => $user->getWallet()->getBalance()
+            'balance' => $user->getWallet()->getBalance(),
         ], Response::HTTP_OK);
     }
 }

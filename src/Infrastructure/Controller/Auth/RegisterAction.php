@@ -86,9 +86,9 @@ class RegisterAction extends AbstractController
                             description: 'password_confirmation of user',
                             type: 'string',
                             example: '12345678'
-                        )
+                        ),
                     ]
-                )
+                ),
             ],
         ),
         responses: [
@@ -97,7 +97,7 @@ class RegisterAction extends AbstractController
                 description: 'User registered successfully',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'user', type: 'object', example: 'john@gmail.com')
+                        new OA\Property(property: 'user', type: 'object', example: 'john@gmail.com'),
                     ],
                     type: 'object',
                 )
@@ -107,7 +107,7 @@ class RegisterAction extends AbstractController
                 description: 'Unique Email Constraint',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'error', type: 'string', example: 'This email is already registered.')
+                        new OA\Property(property: 'error', type: 'string', example: 'This email is already registered.'),
                     ],
                     type: 'object'
                 )
@@ -117,11 +117,11 @@ class RegisterAction extends AbstractController
                 description: 'Unexpected server error',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'error', type: 'string', example: 'Something went wrong.')
+                        new OA\Property(property: 'error', type: 'string', example: 'Something went wrong.'),
                     ],
                     type: 'object'
                 )
-            )
+            ),
         ]
     )]
     #[OA\Tag(name: 'user')]

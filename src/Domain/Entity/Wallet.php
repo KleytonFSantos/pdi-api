@@ -53,7 +53,6 @@ class Wallet
         return $this;
     }
 
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created_at;

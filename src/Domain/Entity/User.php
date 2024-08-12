@@ -53,7 +53,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: false)]
     private ?Wallet $wallet = null;
 
-
     #[ORM\OneToMany(targetEntity: Transaction::class, mappedBy: 'user')]
     private Collection $transaction;
 
@@ -66,7 +65,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotNull()]
     #[Assert\Type('string')]
     #[Assert\NotBlank()]
-    #[Assert\EqualTo(propertyPath: "password")]
+    #[Assert\EqualTo(propertyPath: 'password')]
     private ?string $passwordConfirmation = null;
 
     public function __construct()
@@ -90,7 +89,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
 
     public function getName(): ?string
     {
@@ -160,7 +158,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
 
     public function getPasswordConfirmation(): ?string
     {

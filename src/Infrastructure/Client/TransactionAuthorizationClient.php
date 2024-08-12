@@ -10,7 +10,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class TransactionAuthorizationClient
 {
-    const AUTHORIZATION_URL = 'https://run.mocky.io/v3/a44f11a6-1788-4160-bc48-610e66f8386b';
+    public const AUTHORIZATION_URL = 'https://run.mocky.io/v3/a44f11a6-1788-4160-bc48-610e66f8386b';
 
     public function __construct(private readonly HttpClientInterface $client,
     ) {

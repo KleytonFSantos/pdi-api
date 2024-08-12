@@ -58,7 +58,7 @@ class TransactionHistoryByUserGetAction extends AbstractController
                       "error": "No transaction history found"
                     }'
                 )
-            )
+            ),
         ],
     )]
     #[Security(name: 'Authorization')]

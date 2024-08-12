@@ -34,11 +34,11 @@ class TransactionRepository extends ServiceEntityRepository
         $query = $this->createQueryBuilder('t');
 
         return $query->select(
-                't.amount as value',
-                'upayer.name as payer',
-                'upayee.name as payee',
-                't.created_at'
-            )
+            't.amount as value',
+            'upayer.name as payer',
+            'upayee.name as payee',
+            't.created_at'
+        )
             ->leftJoin(User::class, 'upayee', 'WITH', 't.payee_id = upayee.id')
             ->leftJoin(User::class, 'upayer', 'WITH', 't.payer_id = upayer.id')
             ->where('t.payee_id = :user')

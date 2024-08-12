@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure\Controller\Auth;
 
-use Symfony\Component\Routing\Attribute\Route;
 use OpenApi\Attributes as OA;
+use Symfony\Component\Routing\Attribute\Route;
 
 class LoginAction
 {
@@ -34,9 +34,9 @@ class LoginAction
                             description: 'user password',
                             type: 'string',
                             example: '12345678'
-                        )
+                        ),
                     ]
-                )
+                ),
             ]
         ),
         tags: ['user'],
@@ -59,7 +59,7 @@ class LoginAction
                       "message": "Invalid credentials."
                     }'
                 )
-            )
+            ),
         ],
     )]
     public function __invoke()
