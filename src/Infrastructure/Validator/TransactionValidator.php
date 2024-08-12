@@ -38,10 +38,10 @@ readonly class TransactionValidator
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
      */
-    public function checkAuthorizationStatus(): bool
+    public function isAuthorizationStatusAuthorized(): bool
     {
-        return $this->transactionAuthorizationClient->authorizationStatus()
-            === TransactionAuthorization::Autorizado->value;
+        return TransactionAuthorization::Autorizado->value ===
+            $this->transactionAuthorizationClient->authorizationStatus();
     }
 
     private function payerIsCommun(array $roles): void

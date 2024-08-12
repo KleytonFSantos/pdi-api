@@ -30,20 +30,20 @@ readonly class TransactionService implements TransactionServiceInterface
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
      * @throws ClientExceptionInterface
+     * @throws Exception
      */
     public function create(TransactionDTO $transactionDTO, UserInterface $payer): void
     {
         $this->validator->validate($transactionDTO, $payer);
         $transaction = $this->transactionBuilder->build($transactionDTO, $payer);
 
-        if (! $this->validator->checkAuthorizationStatus()) {
+        if (! $this->validator->isAuthorizationStatusAuthorized()) {
             throw new Exception('Payment was not authorized');
         }
 
         $this->transactionRepository->save($transaction);
         $this->walletService->debitWallet($transactionDTO, $payer);
-        $this->walletService->creditWallet($transactionDTO, $transaction);
-        //TODO notify user
+        $this->walletService->creditWallet($transactionDTO);
     }
 
     public function getTransactionHistoryByUser(int $userId): array
